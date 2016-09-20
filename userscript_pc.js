@@ -1,17 +1,21 @@
+// ==UserScript==
+// @name           京东PC端自动下单
+// @description    有货自动点击
+// @include        http*://*trade.jd.com/*
+// @author         ying
+// @copyright      ying
+// @version        0.1
+// @grant  none
+// @namespace https://github.com/fy1128/jd-autobuy-js
+// ==/UserScript==
+
 (function () {
 	if (window.location.host.indexOf("trade.jd.com") == 0) {
 		const JSONP = "jsonp";
-		var skuid, oPrices, prices, stock, consigneeid, couponid;
+		var allGoodsObjs, areaIds, venderId, skuid, oPrices, prices, stock, consigneeid, couponid;
 		stock = {}; // 库存
 		oPrices = {}; // 下单价格
 		prices = {}; // 实时价格
-		var allGoodsObjs = cloneGoodsObj(); //cloneGoodsObj 为京东页面配置函数
-		allGoodsObjs = allGoodsObjs[0].skuList;
-		//var consigneeid = 138225704;
-		//var couponid = 6418196108;
-		var areaIds = {'state_id':19, 'city_id':1684, 'country_id':19467}; 	//地址编号19-1684-19467-51437
-		
-		var venderId = 0;
 		
 		var getStock = function(dataType, skuid, stockFunc) {
 			ajaxStock(dataType, skuid, stockFunc);
@@ -198,16 +202,73 @@
 		}
 		
 		function getInputVal(obj, placeholder) {
-			console.log(obj);
 			obj.setAttribute("placeholder", placeholder);
 			var value = document.getElementById('custom_data').value;
 			return value;
 		}
 		
 		function randomDot() {
-			var string = ['...', '....', '.....', '......'];
-			return string[parseInt(4*Math.random())];
+			var string = ['...', '....', '.....', '......', '.......', '........', '.........'];
+			return string[parseInt(6*Math.random())];
 		}
+		
+		function dataInit() {
+			allGoodsObjs = cloneGoodsObj(); //cloneGoodsObj 为京东页面配置函数
+			allGoodsObjs = allGoodsObjs[0].skuList;
+			//var consigneeid = 138225704;
+			//var couponid = 6418196108;
+			areaIds = {'state_id':19, 'city_id':1684, 'country_id':19467}; 	//地址编号19-1684-19467-51437
+			venderId = 0;
+		}
+		//function cloneGoodsObj(){
+		//  var goodsObjs = new Array();
+		//  var goodsListEle = $("#skuPayAndShipment-cont  div[class^='goods-list']");
+		//  for(var i = 0; i < goodsListEle.length; i++){
+		//    var goodsItems = $(goodsListEle[i]).find("div[class^='goods-items']");
+		//    for(var j = 0; j < goodsItems.length; j++){
+		//      var goodsItem = $(goodsItems[j]);
+		//      var goodsSuits = goodsItem.children("div[class^='goods-suit']");
+		//      var goodsList = null;
+		//      var goodsObj = {};
+		//      if(goodsSuits.length > 0){
+		//        //处理套装
+		//        goodsObj.productType = "suit";
+		//        var goodsSuitTit = $(goodsSuits[0]).find("div[class^='goods-suit-tit']");
+		//        if(goodsSuitTit.length > 0){
+		//          var suitTip = "";
+		//          var goodsSuitTitEle = $(goodsSuitTit[0]);
+		//          var suitType = goodsSuitTitEle.find("span[class^='sales-icon']");
+		//          if(suitType.length <= 0){
+		//            suitType = goodsSuitTitEle.find("span[class^='coop-cut-i']");
+		//          }
+		//          if(suitType.length > 0){
+		//              suitTip += "<span class='full-icon ml20'>" + $(suitType[0]).html() + "<b></b></span>";
+		//            }
+		//          var suitName = goodsSuitTitEle.find("strong");
+		//          if(suitName.length > 0){
+		//            suitTip += "<span class='full-price ml10'>"+$(suitName[0]).html()+"</span>";
+		//          }
+		//          var back = goodsSuitTitEle.find("span[class^='ml20']");
+		//          if(back.length > 0){
+		//        	  suitTip += "<span class='full-recash ml10'>"+  $(back[0]).text()+"</span>";
+		//          }
+		//          goodsObj.suitName = suitTip;
+		//        }
+		//        goodsList = $(goodsSuits[0]).find("div[class^='goods-item']");
+		//      }else{
+		//        //处理单品
+		//        goodsObj.productType = "item";
+		//        goodsList = goodsItem.find("div[class^='goods-item']");
+		//      }
+		//      if(goodsList.length > 0){
+		//        var cloneObjs = cloneProducts(goodsList);
+		//        goodsObj.skuList = cloneObjs;
+		//        goodsObjs.push(goodsObj);
+		//      }
+		//    }
+		//  }
+		//  return goodsObjs;
+		//}window.cloneGoodsObj = cloneGoodsObj;
 		
 		function doWork() {
 			
@@ -215,12 +276,11 @@
 			window.onbeforeunload = function(event){   
 				return '当前正在监听网页，确认立即退出？'; 
 			};
-
-			getOrderPrices(); // 获取下单价格
 			
+			dataInit(); // 初始化数据
+			getOrderPrices(); // 获取下单价格
 			chooseConsignee(); // 选择收件人
 			chooseCoupon(); // 选择优惠券
-
 			stockListening();  //一键查库存事件监听显示库存列表
 		}
 		
