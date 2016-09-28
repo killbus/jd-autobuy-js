@@ -22,7 +22,7 @@
 		}
 		
 		function ajaxStock(dataType, skuid, dtd) {
-			var url = "http://ss.jd.com/ss/areaStockState/mget?app=cart_pc&ch=1&skuNum="+skuid+",1&area="+areaIds.state_id+","+areaIds.city_id+","+areaIds.country_id+",0";
+			var url = "//ss.jd.com/ss/areaStockState/mget?app=cart_pc&ch=1&skuNum="+skuid+",1&area="+areaIds.state_id+","+areaIds.city_id+","+areaIds.country_id+",0";
 			var getStockAjaxDfd = $.Deferred();
 			getStockAjax(url, getStockAjaxDfd);
 			$.when(getStockAjaxDfd).then(function(data) {
@@ -62,7 +62,7 @@
 		}
 
 		function ajaxPrice(dataType, skuid, dtd) {
-			var URL_PC = "https://p.3.cn/prices/get?type=1&skuid=J_" + skuid; //QQ端
+			var URL_PC = "//p.3.cn/prices/get?type=1&skuid=J_" + skuid; //QQ端
 
 			var getPCPriceAjaxDfd = $.Deferred()
 
