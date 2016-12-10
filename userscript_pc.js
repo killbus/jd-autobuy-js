@@ -94,9 +94,11 @@
 		function getOrderPrices() {
 			for (var e in allGoodsObjs) {
 				var skuid = allGoodsObjs[e]['skuId'];
-				var price = parseFloat(allGoodsObjs[e]['price'].substr('1')).toFixed(2);
+				var price = parseFloat($.trim(allGoodsObjs[e]['price']).substr('1')).toFixed(2);
 				oPrices[skuid] = price;
 			}
+			console.log('结算数据：');
+			console.log(oPrices);
 		}
 
 		function stockListening() {
@@ -112,7 +114,9 @@
 					getPrice(JSONP, skuid, priceFunc);
 				}
 				$.when(stockFunc, priceFunc).done(function() {
+					console.log('实时库存：');
 					console.log(stock);
+					console.log('实时价格：');
 					console.log(prices);
 					if ((Object.keys(stock).length == Object.keys(oPrices).length) && (Object.keys(prices).length == Object.keys(oPrices).length)) {
 						//console.log('数据准备完成，继续...');
@@ -123,12 +127,14 @@
 							}
 						}
 						for (var e in prices) {
-							if (prices[e] > oPrices[e]) {
+							console.log('结果 -> 现价：' + prices[e] + ', 结算价：' + oPrices[e]);
+							if (parseFloat(prices[e]) > parseFloat(oPrices[e])) {
 								isprice = false;
 								break;
 							}
 						}
 						if (istock && isprice) {
+							runnerStop(runner);
 							submitOrder();
 						} else {
 							div.innerHTML = '无货或价格已变动'+randomDot();
@@ -149,6 +155,9 @@
 		
 		function chooseCoupon() {
 			var coupon = $('#selected_coupon_'+couponid);
+			if (coupon.length <= 0) {
+				return false;
+			}
 			var classs = $(coupon).attr('class');
 			classs = classs.split(' ');
 			if ($.inArray('item-selected', classs) == -1) {
