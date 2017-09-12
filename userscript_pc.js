@@ -114,6 +114,7 @@
 					getPrice(JSONP, skuid, priceFunc);
 				}
 				$.when(stockFunc, priceFunc).done(function() {
+					console.log(new Array(50).join('*'));
 					console.log('实时库存：');
 					console.log(stock);
 					console.log('实时价格：');
@@ -140,16 +141,26 @@
 							div.innerHTML = '无货或价格已变动'+randomDot();
 						}
 					}
+					console.log(new Array(50).join('*'));
 				});
 			}, 3000);
 		}
 		
 		function chooseConsignee() {
 			var consignee = $('#consignee_index_div_'+consigneeid);
-			var classs = $(consignee).attr('class');
-			classs = classs.split(' ');
-			if ($.inArray('item-selected', classs) == -1) {
-				$(consignee)[0].click();
+			if (consignee.length > 0) {
+				var classs = $(consignee).attr('class');
+				classs = classs.split(' ');
+				if ($.inArray('item-selected', classs) == -1) {
+					$(consignee)[0].click();
+				}
+			} else {
+				var selfPick = $('#nearestDiv[pickid=' + consigneeid + ']');
+				var classs = $(selfPick).attr('class');
+				classs = classs.split(' ');
+				if ($.inArray('item-selected', classs) == -1) {
+					$(selfPick)[0].click();
+				}
 			}
 		}
 		
